@@ -10,7 +10,7 @@ import (
 func ValidateToken(ctx context.Context, tokenStr string, fnc jwt.Keyfunc) (*jwt.Token, *JWTClaims, error) {
 	token, err := jwt.ParseWithClaims(tokenStr, &JWTClaims{}, fnc)
 	if err != nil {
-		return nil, nil, fmt.Errorf("%w: %q", ErrUnableToParse, err)
+		return nil, nil, fmt.Errorf("%w: %w", ErrUnableToParse, err)
 	}
 
 	if !token.Valid {

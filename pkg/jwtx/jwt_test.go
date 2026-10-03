@@ -4,10 +4,12 @@ import (
 	"context"
 	"crypto/ed25519"
 	"encoding/json"
+	"errors"
 	"math/rand"
 	"testing"
 	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/hiendaovinh/toolkit/pkg/jwtx"
 	"github.com/stretchr/testify/assert"
 )
@@ -73,4 +75,22 @@ func TestIssueToken(t *testing.T) {
 	}, claims.Metadata)
 
 	assert.LessOrEqual(t, time.Until(claims.ExpiresAt.Time), expiration, "invalid expiration")
+}
+
+func TestValidateTokenExpired(t *testing.T) {
+	pub, priv, err := ed25519.GenerateKey(nil)
+	assert.NoError(t, err)
+
+	a, err := jwtx.NewAuthority("issuer", -time.Minute, pub, priv)
+	assert.NoError(t, err)
+
+	_, jwks, err := a.GenerateKeySet(context.Background())
+	assert.NoError(t, err)
+
+	_, tokenStr, err := a.IssueToken(context.Background(), "subject", []string{"audience"}, nil)
+	assert.NoError(t, err)
+
+	_, _, err = jwtx.ValidateToken(context.Background(), tokenStr, jwks.Keyfunc)
+	assert.True(t, errors.Is(err, jwtx.ErrUnableToParse), "should wrap ErrUnableToParse")
+	assert.True(t, errors.Is(err, jwt.ErrTokenExpired), "should wrap jwt.ErrTokenExpired")
 }
