@@ -132,7 +132,8 @@ func Wrap(err error, kind Kind) *Error {
 		return &Error{err: err, kind: Exist, message: v.Detail}
 	}
 
-	if _, ok := err.(*pgconn.PgError); ok {
+	var pgErr *pgconn.PgError
+	if errors.As(err, &pgErr) {
 		return &Error{err: err, kind: Database, message: err.Error()}
 	}
 
@@ -140,11 +141,7 @@ func Wrap(err error, kind Kind) *Error {
 }
 
 func IsNoRows(err error) bool {
-	if err == sql.ErrNoRows || err == pgx.ErrNoRows {
-		return true
-	}
-
-	return false
+	return errors.Is(err, sql.ErrNoRows) || errors.Is(err, pgx.ErrNoRows)
 }
 
 func IsForbidden(err error) bool {
@@ -152,11 +149,8 @@ func IsForbidden(err error) bool {
 }
 
 func IsDuplicated(err error) (*pgconn.PgError, bool) {
-	if err == nil {
-		return nil, false
-	}
-
-	if v, ok := err.(*pgconn.PgError); ok {
+	var v *pgconn.PgError
+	if errors.As(err, &v) {
 		return v, v.SQLState() == "23505"
 	}
 
