@@ -97,6 +97,9 @@ func TestCompare(t *testing.T) {
 	assert.Equal(t, false, arr.ArrCompare(arr1, arr3))
 	assert.Equal(t, true, arr.ArrCompareRelaxed(arr1, arr3))
 	assert.Equal(t, true, arr.ArrCompareRelaxed(arr2, arr3))
+	assert.Equal(t, true, arr.ArrCompareRelaxed([]int{1, 1, 2}, []int{1, 2, 1}))
+	assert.Equal(t, false, arr.ArrCompareRelaxed([]int{1, 1, 2}, []int{1, 2, 2}))
+	assert.Equal(t, false, arr.ArrCompareRelaxed([]int{1, 2, 2}, []int{1, 1, 2}))
 }
 
 func TestIntersect(t *testing.T) {

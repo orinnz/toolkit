@@ -140,10 +140,15 @@ func ArrCompareRelaxed[T comparable](a, b []T) bool {
 	if len(a) != len(b) {
 		return false
 	}
+	counts := make(map[T]int, len(a))
 	for _, v := range a {
-		if _, found := ArrFind(b, v); !found {
+		counts[v]++
+	}
+	for _, v := range b {
+		if counts[v] == 0 {
 			return false
 		}
+		counts[v]--
 	}
 	return true
 }
