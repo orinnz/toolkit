@@ -23,7 +23,8 @@ func WithAuthClaims(ctx context.Context, v *jwtx.JWTClaims) context.Context {
 	subject := v.Subject
 	id, err := uuid.Parse(subject)
 	if err != nil {
-		return context.WithValue(ctx, ctxKeyAuthClaims, v)
+		// clear any subject UUID inherited from claims set earlier on ctx
+		return context.WithValue(context.WithValue(ctx, ctxKeyAuthSubject, nil), ctxKeyAuthClaims, v)
 	}
 
 	return context.WithValue(context.WithValue(ctx, ctxKeyAuthSubject, id), ctxKeyAuthClaims, v)
