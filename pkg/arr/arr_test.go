@@ -65,6 +65,20 @@ func TestArrPrepend(t *testing.T) {
 	assert.Equal(t, arrExpected, arrPrepend)
 }
 
+func TestArrPrependEmpty(t *testing.T) {
+	assert.Equal(t, []int{1}, arr.ArrPrepend([]int{}, 1))
+	assert.Equal(t, []int{1}, arr.ArrPrepend[int](nil, 1))
+}
+
+func TestArrPrependKeepsInput(t *testing.T) {
+	array := make([]int, 3, 10)
+	copy(array, []int{1, 2, 3})
+
+	arrPrepend := arr.ArrPrepend(array, 0)
+	assert.Equal(t, []int{0, 1, 2, 3}, arrPrepend)
+	assert.Equal(t, []int{1, 2, 3}, array)
+}
+
 func TestSlice(t *testing.T) {
 	array := []int{0, 1, 2, 3, 4, 5}
 

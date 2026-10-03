@@ -53,15 +53,7 @@ func ArrUnique[T comparable](vals []T) []T {
 }
 
 func ArrPrepend[T comparable](vals []T, v T) []T {
-	if len(vals) == 0 {
-		return vals
-	}
-
-	var noop T
-	vals = append(vals, noop)
-	copy(vals[1:], vals)
-	vals[0] = v
-	return vals
+	return append([]T{v}, vals...)
 }
 
 func ArrSlice[T any](items []T, from, to int) []T {
